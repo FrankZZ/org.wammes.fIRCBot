@@ -9,30 +9,25 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class IRCSocket extends fIRCBot implements Runnable
+public class IRCSocket extends fIRCBot
 {
 	public Socket s;
 	private String sHost;
 	private int iPort;
 	private Thread t;
-	public BufferedReader socketReader;
-	public BufferedWriter socketWriter;
+	private BufferedReader socketReader;
+	private BufferedWriter socketWriter;
+	private InputThread _inputThread;
+	private OutputThread _outputThread;
+	fIRCBot _bot;
+
 	
-	public IRCSocket( String host, int port )
+	public IRCSocket( fIRCBot bot, String host, int port )
 	{
+		_bot = bot;
 		sHost = host;
 		iPort = port;
 		System.out.println( "IRCSocket Constructed.");
-		t = new Thread( this );
-		t.start( );
-	}
-
-	public void Connect()
-	{
-
-	}
-	public void run( )
-	{
 		try
 		{
 			s = new Socket( sHost, iPort );
@@ -45,13 +40,7 @@ public class IRCSocket extends fIRCBot implements Runnable
 		    		new OutputStreamWriter( s.getOutputStream( ) )
 		    );
 			this.identify();
-			String currLine = null;
-			while ((currLine = socketReader.readLine()) != null)
-		    {
-		    	System.out.println( "<< " + currLine );
-				String[] splitLine = currLine.split( " " );
-				this.processLine( splitLine );
-		    }
+			
 		}
 		catch( UnknownHostException e )
 		{
@@ -62,10 +51,15 @@ public class IRCSocket extends fIRCBot implements Runnable
 			e.printStackTrace( );
 		}
 		System.out.println( "IRCSocket Connected.");
+		System.out.println( "Constructing InputThread..." );
+		//New thread for socketReader
+		_inputThread = new InputThread( _bot, socketReader );
+		//_outputThread = new OutputThread( _bot, socketWriter );
+
 	}
+
 	public void Write( String data )
 	{
-
 		try
 		{
 			socketWriter.write( data + "\n\r" );

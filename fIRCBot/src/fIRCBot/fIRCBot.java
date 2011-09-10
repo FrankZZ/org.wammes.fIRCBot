@@ -12,14 +12,11 @@ public class fIRCBot
 	}
 	public void Connect( String host, int port )
 	{
-		s = new IRCSocket( host, port );
+		s = new IRCSocket( this, host, port );
 	}
-	public void addCommand( )
+	public void onRawLine( String currLine )
 	{
-		
-	}
-	public void processLine( String splitLine[] )
-	{
+		String[] splitLine = currLine.split( " " );
 		if( splitLine.length > 0 )
 		{
 			if( splitLine[0].equalsIgnoreCase( "PING" ) )

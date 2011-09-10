@@ -1,6 +1,6 @@
 package fIRCBot;
 
-public class Main 
+public class Main extends fIRCBot 
 {
 	private static fIRCBot b;
 	public static void main( String[] args )
