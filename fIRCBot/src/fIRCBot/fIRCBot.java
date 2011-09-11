@@ -13,6 +13,7 @@ public abstract class fIRCBot
 	private String botNick = "wamBot";
 	private String host;
 	private int port;
+
 	private List<String> channels = new ArrayList<String>( );
 
 	public fIRCBot( )
@@ -25,7 +26,7 @@ public abstract class fIRCBot
 		this.port = port;
 		s = new IRCSocket( this, this.host, this.port );
 		s.Write( "NICK " + this.botNick );
-		s.Write( "USER FrankZZ 8 * : WamJava IRC" );
+		s.Write( "USER " + this.botNick + " 8 * : WamJava IRC" );
         s.Flush();	
 	}
 	public void onRawLine( String currLine )
@@ -38,6 +39,7 @@ public abstract class fIRCBot
 			currCode = currLine.substring( ( firstSpace + 1 ), secondSpace );
 			if( currCode.equals( "004" ) ) // we are registered
 			{
+				this.joinChannels( );
 				this.onConnect( );
 			}
 			else if( currCode.equalsIgnoreCase( "PRIVMSG" ) )
@@ -62,6 +64,7 @@ public abstract class fIRCBot
 			{
 				String pingParameters = currLine.substring( ( firstSpace ) );
 				s.Write( "PONG" + pingParameters );
+				s.Flush( );
 			}
 		}
 	}
@@ -78,7 +81,7 @@ public abstract class fIRCBot
 		System.out.println( "Set botNick to " + name );
 	}
 	//Static callbacks, should not be overridden (cannot, final)
-	public final void onConnect( )
+	public final void joinChannels( )
 	{
 		int len = channels.size( );
 		for( int i = 0; i < len; i++ )
@@ -88,11 +91,25 @@ public abstract class fIRCBot
 		s.Flush( );
 	}
 	//callbacks
+	public void onConnect( )
+	{
+		/*
+		 * no-op
+		 */
+	}
 	public void onUserSay(String user, String host, String channel, String message)
 	{
 		/* 
 		 * no-op
 		 */
+	}
+	public boolean rawLine( String line )
+	{
+		if( !s.Write( line ) )
+		{
+			return false;
+		}
+		return s.Flush( );
 	}
 }
 

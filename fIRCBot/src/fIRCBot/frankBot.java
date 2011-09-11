@@ -2,6 +2,7 @@ package fIRCBot;
 
 public class frankBot extends fIRCBot
 {
+	final String ACTION = "";
 	private static frankBot b;
 	public frankBot( )
 	{
@@ -17,6 +18,12 @@ public class frankBot extends fIRCBot
 	}
 	public void onUserSay( String user, String host, String channel, String message )
 	{
+		if( user.equalsIgnoreCase("frankzz") )
+			b.rawLine( "PRIVMSG " + channel + " :" + ACTION + "ACTION suks dik" + ACTION );
 		System.out.println( "nick: " + user + " host: " + host + " says " + message + " in " + channel );
+	}
+	public void onConnect( )
+	{
+		
 	}
 }
