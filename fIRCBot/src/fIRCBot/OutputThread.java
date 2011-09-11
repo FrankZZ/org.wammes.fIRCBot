@@ -1,16 +1,13 @@
 package fIRCBot;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
+//import java.io.IOException;
 
 public class OutputThread
 {
+	@SuppressWarnings("unused")
 	private fIRCBot _bot;
+	@SuppressWarnings("unused")
 	private BufferedWriter sw;
 	public OutputThread( fIRCBot bot, BufferedWriter SocketWriter )
 	{

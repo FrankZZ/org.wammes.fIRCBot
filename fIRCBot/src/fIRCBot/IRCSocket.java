@@ -14,10 +14,13 @@ public class IRCSocket
 	public Socket s;
 	private String sHost;
 	private int iPort;
+	@SuppressWarnings("unused")
 	private Thread t;
 	private BufferedReader socketReader;
 	private BufferedWriter socketWriter;
+	@SuppressWarnings("unused")
 	private InputThread _inputThread;
+	@SuppressWarnings("unused")
 	private OutputThread _outputThread;
 	fIRCBot _bot;
 
@@ -56,11 +59,12 @@ public class IRCSocket
 		_inputThread = new InputThread( _bot, socketReader );
 		/*
 		 * new thread for socketWriter
+		 * not used yet
 		 */
 		//_outputThread = new OutputThread( _bot, socketWriter );
 	}
 
-	public void Write( String data )
+	public boolean Write( String data )
 	{
 		try
 		{
@@ -70,9 +74,11 @@ public class IRCSocket
 		catch( IOException e )
 		{
 			e.printStackTrace( );
+			return false;
 		}
+		return true;
 	}
-	public void Flush( )
+	public boolean Flush( )
 	{
 		try
 		{
@@ -81,7 +87,9 @@ public class IRCSocket
 		catch( IOException e )
 		{
 			e.printStackTrace( );
+			return false;
 		}
+		return true;
 	}
 
 }

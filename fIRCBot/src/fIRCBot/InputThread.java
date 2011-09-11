@@ -1,20 +1,13 @@
 package fIRCBot;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class InputThread implements Runnable
 {
-	Thread t;
-	Socket s;
-	BufferedReader sr;
-	BufferedWriter sw;
-	fIRCBot _bot;
+	private Thread t;
+	private BufferedReader sr;
+	private fIRCBot _bot;
 	public InputThread( fIRCBot bot, BufferedReader SocketReader )
 	{
 		_bot = bot;
@@ -36,7 +29,7 @@ public class InputThread implements Runnable
 				}
 				catch ( Throwable t )
 				{
-					
+					t.printStackTrace();
 				}
 		    }
 		}
@@ -44,6 +37,5 @@ public class InputThread implements Runnable
 		{
 			e.printStackTrace();
 		}
-		
 	}
 }

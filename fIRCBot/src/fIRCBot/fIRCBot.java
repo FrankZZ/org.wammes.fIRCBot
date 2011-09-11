@@ -1,4 +1,8 @@
 package fIRCBot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 //Alle benodigde imports voor o.a. sockets:
 
 
@@ -9,7 +13,7 @@ public abstract class fIRCBot
 	private String botNick = "wamBot";
 	private String host;
 	private int port;
-	private String[] channels;
+	private List<String> channels = new ArrayList<String>( );
 
 	public fIRCBot( )
 	{
@@ -28,20 +32,36 @@ public abstract class fIRCBot
 	{
 		int firstSpace = currLine.indexOf( " " );
 		int secondSpace = currLine.indexOf( " ", ( firstSpace + 1 ) );
-		if( secondSpace >= 0 )
+		String currCode = null;
+		if( secondSpace > 0 )
 		{
-			String currCode = currLine.substring( ( firstSpace + 1 ), secondSpace );
-			//String[] splitLine = currLine.split( " " );
+			currCode = currLine.substring( ( firstSpace + 1 ), secondSpace );
 			if( currCode.equals( "004" ) ) // we are registered
 			{
 				this.onConnect( );
 			}
 			else if( currCode.equalsIgnoreCase( "PRIVMSG" ) )
 			{
+				
 				/*
 				    :FrankZZ!FrankZZ@frankwammes.nl PRIVMSG #chillpoint :123
 				 */
-				//this.onUserSay( user, host, message );
+				int thirdSpace = currLine.indexOf( " ", secondSpace + 1 );
+				int firstExclamationMark = currLine.indexOf( "!" );
+				String user = currLine.substring( 1, firstExclamationMark );
+				String host = currLine.substring( ( firstExclamationMark + 1 ), firstSpace );
+				String message = currLine.substring( ( thirdSpace + 2 ) );
+				String channel = currLine.substring( ( secondSpace + 1 ), thirdSpace );
+				this.onUserSay( user, host, channel, message );
+			}
+		}
+		else if( firstSpace > 0 )
+		{
+			currCode = currLine.substring( 0, firstSpace );
+			if( currCode.equals( "PING" ) )
+			{
+				String pingParameters = currLine.substring( ( firstSpace ) );
+				s.Write( "PONG" + pingParameters );
 			}
 		}
 	}
@@ -50,8 +70,7 @@ public abstract class fIRCBot
 	 */
 	public void addChannel( String channel )
 	{
-		int idx = channels.length;
-		channels[idx] = channel;
+		channels.add( channel );
 	}
 	public void setName( String name )
 	{
@@ -61,14 +80,19 @@ public abstract class fIRCBot
 	//Static callbacks, should not be overridden (cannot, final)
 	public final void onConnect( )
 	{
-		s.Write( "JOIN :#chillpoint" );
-		s.Write( "JOIN :#wammes.org" );
+		int len = channels.size( );
+		for( int i = 0; i < len; i++ )
+		{
+			s.Write( "JOIN :" + channels.get( i ) );
+		}
 		s.Flush( );
 	}
 	//callbacks
-	public void onUserSay(String user, String host, String message)
+	public void onUserSay(String user, String host, String channel, String message)
 	{
-		//o.onUserSay(user, host, message);	
+		/* 
+		 * no-op
+		 */
 	}
 }
 
