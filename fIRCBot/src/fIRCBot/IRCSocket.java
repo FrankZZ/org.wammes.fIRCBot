@@ -9,7 +9,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class IRCSocket extends fIRCBot
+public class IRCSocket
 {
 	public Socket s;
 	private String sHost;
@@ -39,8 +39,6 @@ public class IRCSocket extends fIRCBot
 		    (
 		    		new OutputStreamWriter( s.getOutputStream( ) )
 		    );
-			this.identify();
-			
 		}
 		catch( UnknownHostException e )
 		{
@@ -52,10 +50,14 @@ public class IRCSocket extends fIRCBot
 		}
 		System.out.println( "IRCSocket Connected.");
 		System.out.println( "Constructing InputThread..." );
-		//New thread for socketReader
+		/*
+		 * New thread for socketReader
+		 */
 		_inputThread = new InputThread( _bot, socketReader );
+		/*
+		 * new thread for socketWriter
+		 */
 		//_outputThread = new OutputThread( _bot, socketWriter );
-
 	}
 
 	public void Write( String data )
@@ -81,12 +83,5 @@ public class IRCSocket extends fIRCBot
 			e.printStackTrace( );
 		}
 	}
-	public void identify( )
-	{
-		//this.Write( "PASS *" );
-		this.Write( "NICK wamBot" );
-		this.Write( "USER FrankZZ 8 * : WamJava IRC" );
-        //this.Write( "JOIN :#WammesNET" );
-        this.Flush();
-	}
+
 }

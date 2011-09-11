@@ -3,44 +3,72 @@ package fIRCBot;
 
 
 //De klasse fIRCBot. Hier gaat de 'shyte down'
-public class fIRCBot 
+public abstract class fIRCBot
 {
 	private IRCSocket s;
+	private String botNick = "wamBot";
+	private String host;
+	private int port;
+	private String[] channels;
+
 	public fIRCBot( )
 	{
 		System.out.println( "fIRCBot Constructed." );
 	}
 	public void Connect( String host, int port )
 	{
-		s = new IRCSocket( this, host, port );
+		this.host = host;
+		this.port = port;
+		s = new IRCSocket( this, this.host, this.port );
+		s.Write( "NICK " + this.botNick );
+		s.Write( "USER FrankZZ 8 * : WamJava IRC" );
+        s.Flush();	
 	}
 	public void onRawLine( String currLine )
 	{
-		String[] splitLine = currLine.split( " " );
-		if( splitLine.length > 0 )
+		int firstSpace = currLine.indexOf( " " );
+		int secondSpace = currLine.indexOf( " ", ( firstSpace + 1 ) );
+		if( secondSpace >= 0 )
 		{
-			if( splitLine[0].equalsIgnoreCase( "PING" ) )
+			String currCode = currLine.substring( ( firstSpace + 1 ), secondSpace );
+			//String[] splitLine = currLine.split( " " );
+			if( currCode.equals( "004" ) ) // we are registered
 			{
-				String pong = "PONG";
-				if( splitLine.length > 1 )
-				{
-					pong += " " + splitLine[1];
-				}
-				s.Write( pong );
-				s.Flush( );
+				this.onConnect( );
 			}
-			else if( splitLine[1].equals( "004" ) ) // we are registered
+			else if( currCode.equalsIgnoreCase( "PRIVMSG" ) )
 			{
-				System.out.print( "\n\n\n\nBITCH\n\n\n");
-				s.Write( "JOIN :#wammes.org" );
-				s.Flush( );
-			}
-			else if( splitLine[1].equals( "353") )
-			{
-				//server is passing userlist of channel in following format:
-				// :nl.irc.sc 353 wamBot = #wammes.org :wamBot Jim91 ~FrankZZ
+				/*
+				    :FrankZZ!FrankZZ@frankwammes.nl PRIVMSG #chillpoint :123
+				 */
+				//this.onUserSay( user, host, message );
 			}
 		}
+	}
+	/*
+	 * Function to add a channel to join on connect, stored in an array. if onConnect is called we will loop through
+	 */
+	public void addChannel( String channel )
+	{
+		int idx = channels.length;
+		channels[idx] = channel;
+	}
+	public void setName( String name )
+	{
+		this.botNick = name;
+		System.out.println( "Set botNick to " + name );
+	}
+	//Static callbacks, should not be overridden (cannot, final)
+	public final void onConnect( )
+	{
+		s.Write( "JOIN :#chillpoint" );
+		s.Write( "JOIN :#wammes.org" );
+		s.Flush( );
+	}
+	//callbacks
+	public void onUserSay(String user, String host, String message)
+	{
+		//o.onUserSay(user, host, message);	
 	}
 }
 
